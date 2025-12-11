@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env
+
+# PyInstaller
+*.manifest
+*.spec
+build/
+dist/
+
+# Node/Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# ArtShield
+*.log
+temp_docx_extract/

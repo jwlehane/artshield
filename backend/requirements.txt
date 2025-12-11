@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pillow
+piexif
+requests
+# PyTorch will need manual installation for CUDA, but we list the base here
+torch
+torchvision
+torchaudio
