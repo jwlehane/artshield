@@ -31,10 +31,11 @@ jobs:
         working-directory: ./frontend
         env:
           VITE_MOCK_API: true
-        # GitHub Pages expects files in 'dist', but mostly needs base URL set to repo name if not custom domain
-        # Setting base path for GitHub Pages: https://vitejs.dev/guide/static-deploy.html#github-pages
+          GITHUB_PAGES: true
+        # GitHub Pages expects files in 'dist'
         run: |
-          npm run build -- --base=/artshield/
+          npm run build
+          touch dist/.nojekyll
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
