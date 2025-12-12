@@ -9,7 +9,7 @@
   <p>
     <a href="https://jwlehane.github.io/artshield/"><strong>View Web Demo</strong></a> • 
     <a href="#getting-started">Getting Started</a> • 
-    <a href="#how-it-works">How It Works</a>
+    <a href="#features">Features</a>
   </p>
 </div>
 
@@ -24,7 +24,7 @@ We believe:
 2.  **Privacy is Paramount:** Your art never leaves your machine. Processing happens locally on your GPU/CPU.
 3.  **Access is Equity:** Protection shouldn't require a Computer Science degree.
 
-## ✨ Features
+## <a id="features"></a>✨ Features
 
 - **The Cloak (Mist v2):** Integrated adversarial protection that disrupts style mimicry in AI models.
 - **The Tag (Metadata):** Injects "Do Not Train" signals (`NoAI` tags, Copyright assertions) directly into file headers.
@@ -43,7 +43,7 @@ ArtShield uses a **Hybrid Architecture** to combine raw Python power with a mode
 -   **Packaging:** [PyInstaller](https://pyinstaller.org/)
     -   *Why?* To bundle everything into a single, double-click executable (`.exe` / `.app`).
 
-## 🚀 Getting Started
+## <a id="getting-started"></a>🚀 Getting Started
 
 ### Prerequisites
 -   **Node.js 20+**
