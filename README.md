@@ -1,7 +1,7 @@
 # ArtShield
 
 <div align="center">
-  <img src="https://github.com/jwlehane/artshield/assets/placeholder/logo.png" alt="ArtShield Logo" width="200" />
+  <img src="docs/images/logo.png" alt="ArtShield Logo" width="200" />
   <h1>Democratizing Defense in the Age of AI</h1>
   <p>
     <strong>A local-first, privacy-focused tool for independent artists to protect their work from non-consensual AI training.</strong>
