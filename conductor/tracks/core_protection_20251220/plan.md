@@ -1,12 +1,12 @@
 # Implementation Plan: Implement Core Protection Engine
 
-## Phase 1: Foundation & Metadata (The Tag)
+## Phase 1: Foundation & Metadata (The Tag) [checkpoint: 4578cc5]
 Goal: Establish the metadata injection system and basic engine structure.
 
-- [x] Task: Define unified Protection Parameters and Result models in backend/processor.py [24c2b50]
+- [x] Task: Define unified Protection Parameters and Result models in `backend/processor.py` [24c2b50]
 - [x] Task: Write tests for Metadata Injection (JPEG/PNG) [112338a]
 - [x] Task: Implement `The Tag` (Metadata Injection) for `NoAI`, Copyright, and Ownership [8713b80]
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Metadata' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Metadata' (Protocol in workflow.md) [4578cc5]
 
 ## Phase 2: Adversarial Protection (The Cloak & The Poison)
 Goal: Integrate adversarial models for style protection and poisoning.
