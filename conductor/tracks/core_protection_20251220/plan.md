@@ -20,7 +20,7 @@ Goal: Integrate adversarial models for style protection and poisoning.
 ## Phase 3: Integration & Performance
 Goal: Optimize the engine and provide the API interface.
 
-- [ ] Task: Write tests for the unified processing endpoint
+- [x] Task: Write tests for the unified processing endpoint [8aea6c5]
 - [ ] Task: Create FastAPI endpoints for triggering protection tasks
 - [ ] Task: Implement local hardware detection for optimization (CPU vs GPU)
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Integration & Performance' (Protocol in workflow.md)
