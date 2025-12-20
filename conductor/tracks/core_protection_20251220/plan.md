@@ -3,7 +3,7 @@
 ## Phase 1: Foundation & Metadata (The Tag)
 Goal: Establish the metadata injection system and basic engine structure.
 
-- [ ] Task: Define unified Protection Parameters and Result models in `backend/processor.py`
+- [x] Task: Define unified Protection Parameters and Result models in backend/processor.py [24c2b50]
 - [ ] Task: Write tests for Metadata Injection (JPEG/PNG)
 - [ ] Task: Implement `The Tag` (Metadata Injection) for `NoAI`, Copyright, and Ownership
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Metadata' (Protocol in workflow.md)
