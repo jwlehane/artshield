@@ -1,6 +1,34 @@
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 import piexif
 import os
+from enum import Enum
+from pydantic import BaseModel, Field
+from typing import Optional, Dict
+
+class ProtectionType(str, Enum):
+    CLOAK = "cloak"
+    TAG = "tag"
+    CLOAK_AND_TAG = "cloak_and_tag"
+    POISON = "poison"
+
+class Intensity(str, Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+
+class ProtectionParams(BaseModel):
+    image_path: str
+    protection_type: ProtectionType = ProtectionType.CLOAK_AND_TAG
+    intensity: Intensity = Intensity.MEDIUM
+    output_path: Optional[str] = None
+    metadata: Dict[str, str] = Field(default_factory=dict)
+
+class ProtectionResult(BaseModel):
+    success: bool
+    original_path: str
+    protected_path: Optional[str] = None
+    message: Optional[str] = None
+    error: Optional[str] = None
 
 class ImageProcessor:
     def __init__(self, file_path: str):
