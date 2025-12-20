@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
@@ -6,9 +6,10 @@ import uvicorn
 import os
 import shutil
 import uuid
+import json
 from concurrent.futures import ProcessPoolExecutor
 import asyncio
-from processor import ImageProcessor
+from processor import ImageProcessor, ProtectionParams, ProtectionType, Intensity
 
 app = FastAPI(title="ArtShield API (Agent 2)", version="1.0")
 
@@ -44,33 +45,24 @@ process_pool = ProcessPoolExecutor()
 async def health_check():
     return {"status": "ok", "message": "ArtShield Backend (Agent 2) is running"}
 
-def run_pipeline(file_path: str, output_path: str):
+def run_pipeline(params: ProtectionParams):
     """
     Function to run in a separate process.
     """
-    processor = ImageProcessor(file_path)
-    # Pipeline: Resize -> Mist (Mock) -> Watermark -> Metadata
-    # For now, we just chain them. 
-    # In a real scenario, we might want configuration.
-    
-    # 1. Resize (TODO: make configurable)
-    processor.resize((1024, 1024))
-    
-    # 2. Mist (Mocked)
-    processor.apply_mist()
-    
-    # 3. Watermark
-    processor.apply_watermark("ArtShield Protected")
-    
-    # 4. Metadata
-    processor.add_metadata(author="ArtShield User", copyright="Copyright 2025 ArtShield")
-    
-    # Save
-    processor.save(output_path)
-    return output_path
+    processor = ImageProcessor(params.image_path)
+    # The unified process method handles Cloak, Poison, and Tag
+    result = processor.process(params)
+    if not result.success:
+        raise Exception(result.error)
+    return result.protected_path
 
 @app.post("/api/process")
-async def process_image(file: UploadFile = File(...)):
+async def process_image(
+    file: UploadFile = File(...),
+    protection_type: str = Form("cloak_and_tag"),
+    intensity: str = Form("medium"),
+    metadata: str = Form("{}")
+):
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="File must be an image")
 
@@ -86,10 +78,25 @@ async def process_image(file: UploadFile = File(...)):
         # Save uploaded file
         with open(input_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
+        
+        # Parse metadata JSON
+        try:
+            metadata_dict = json.loads(metadata)
+        except json.JSONDecodeError:
+            metadata_dict = {}
+            
+        # Create ProtectionParams
+        params = ProtectionParams(
+            image_path=input_path,
+            output_path=output_path,
+            protection_type=ProtectionType(protection_type),
+            intensity=Intensity(intensity),
+            metadata=metadata_dict
+        )
             
         # Run processing in background process
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(process_pool, run_pipeline, input_path, output_path)
+        await loop.run_in_executor(process_pool, run_pipeline, params)
         
         # Return URL to processed image
         # Assuming server runs on localhost:8999 for now as per plan
