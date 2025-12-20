@@ -11,7 +11,7 @@ Goal: Establish the metadata injection system and basic engine structure.
 ## Phase 2: Adversarial Protection (The Cloak & The Poison)
 Goal: Integrate adversarial models for style protection and poisoning.
 
-- [ ] Task: Write tests for Adversarial Noise application
+- [x] Task: Write tests for Adversarial Noise application [67122fe]
 - [ ] Task: Implement `The Cloak` (Glaze-style style protection) logic
 - [ ] Task: Implement `The Poison` (Nightshade-style data poisoning) logic
 - [ ] Task: Integrate Cloak/Poison into the unified processing engine
