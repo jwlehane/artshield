@@ -4,7 +4,7 @@
 Goal: Establish the metadata injection system and basic engine structure.
 
 - [x] Task: Define unified Protection Parameters and Result models in backend/processor.py [24c2b50]
-- [ ] Task: Write tests for Metadata Injection (JPEG/PNG)
+- [x] Task: Write tests for Metadata Injection (JPEG/PNG) [112338a]
 - [ ] Task: Implement `The Tag` (Metadata Injection) for `NoAI`, Copyright, and Ownership
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Metadata' (Protocol in workflow.md)
 
