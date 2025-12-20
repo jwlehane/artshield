@@ -27,3 +27,5 @@ frontend/.env
 # ArtShield
 *.log
 temp_docx_extract/
+backend/uploads/
+backend/processed_images/
