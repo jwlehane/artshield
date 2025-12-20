@@ -37,6 +37,50 @@ class ImageProcessor:
         # Ensure image is in RGB mode (handle RGBA or P)
         if self.image.mode != "RGB":
             self.image = self.image.convert("RGB")
+        self.output_path = None
+        self.exif_bytes = None
+
+    def process(self, params: ProtectionParams) -> ProtectionResult:
+        """
+        Execute the protection pipeline based on params.
+        """
+        try:
+            # 1. Apply Cloak (Mist/Glaze) if requested
+            if params.protection_type in [ProtectionType.CLOAK, ProtectionType.CLOAK_AND_TAG]:
+                self.apply_mist()
+            
+            # 2. Add Metadata (The Tag)
+            if params.protection_type in [ProtectionType.TAG, ProtectionType.CLOAK_AND_TAG]:
+                # Extract specific fields from metadata dict or use defaults
+                author = params.metadata.get("author", "Unknown Artist")
+                copyright_text = params.metadata.get("copyright", "Copyright 2025")
+                noai = params.metadata.get("noai", "True")
+                self.add_metadata(author, copyright_text, noai)
+
+            # 3. Save
+            if params.output_path:
+                output_path = params.output_path
+            else:
+                # Generate default output path
+                base, ext = os.path.splitext(self.file_path)
+                output_path = f"{base}_protected.jpg"
+            
+            self.save(output_path)
+            self.output_path = output_path
+            
+            return ProtectionResult(
+                success=True,
+                original_path=self.file_path,
+                protected_path=output_path,
+                message="Protection applied successfully"
+            )
+
+        except Exception as e:
+            return ProtectionResult(
+                success=False,
+                original_path=self.file_path,
+                error=str(e)
+            )
 
     def resize(self, max_size: tuple[int, int]):
         """
@@ -84,17 +128,14 @@ class ImageProcessor:
         # Draw text
         draw.text((x, y), text, font=font, fill=(255, 255, 255))
 
-    def add_metadata(self, author: str, copyright: str):
+    def add_metadata(self, author: str, copyright: str, noai: str = "True"):
         """
-        Add simple EXIF metadata.
+        Add simple EXIF metadata including NoAI tags.
         """
         try:
             exif_dict = {"0th": {}, "Exif": {}, "GPS": {}, "1st": {}, "thumbnail": None}
             
-            # XPAuthor (Tag 0x9c9d) - specific to Windows, encoded in UCS-2 LE
-            # Copyright (Tag 0x8298) - Standard
-            
-            # piexif expects bytes for Copyright
+            # Copyright (Tag 0x8298)
             exif_dict["0th"][piexif.ImageIFD.Copyright] = copyright.encode('utf-8')
             
             # Artist (Tag 0x013b)
@@ -102,6 +143,13 @@ class ImageProcessor:
             
             # Software (Tag 0x0131)
             exif_dict["0th"][piexif.ImageIFD.Software] = b"ArtShield Agent 2"
+            
+            # UserComment (Tag 0x9286) - Often used for extra metadata
+            # We will inject "NoAI" here as a persistent signal
+            if noai.lower() == "true":
+                # ASCII prefix for UserComment
+                user_comment = b"ASCII\0\0\0NoAI: True"
+                exif_dict["Exif"][piexif.ExifIFD.UserComment] = user_comment
 
             exif_bytes = piexif.dump(exif_dict)
             self.exif_bytes = exif_bytes
