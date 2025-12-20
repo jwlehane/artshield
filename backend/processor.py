@@ -31,7 +31,36 @@ class ProtectionResult(BaseModel):
     message: Optional[str] = None
     error: Optional[str] = None
 
+class HardwareInfo(BaseModel):
+    device: str
+    has_cuda: bool
+    cuda_device_name: Optional[str] = None
+
 class ImageProcessor:
+    @staticmethod
+    def get_hardware_info() -> HardwareInfo:
+        """
+        Detect local hardware capabilities (CPU vs GPU).
+        """
+        has_cuda = False
+        device_name = None
+        device = "cpu"
+        
+        try:
+            import torch
+            has_cuda = torch.cuda.is_available()
+            if has_cuda:
+                device = "cuda"
+                device_name = torch.cuda.get_device_name(0)
+        except ImportError:
+            pass
+            
+        return HardwareInfo(
+            device=device,
+            has_cuda=has_cuda,
+            cuda_device_name=device_name
+        )
+
     def __init__(self, file_path: str):
         self.file_path = file_path
         self.image = Image.open(file_path)
