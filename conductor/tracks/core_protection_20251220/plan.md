@@ -17,10 +17,10 @@ Goal: Integrate adversarial models for style protection and poisoning.
 - [x] Task: Integrate Cloak/Poison into the unified processing engine [c2aa785]
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Adversarial Protection' (Protocol in workflow.md) [11eb843]
 
-## Phase 3: Integration & Performance
+## Phase 3: Integration & Performance [checkpoint: cda12a8]
 Goal: Optimize the engine and provide the API interface.
 
 - [x] Task: Write tests for the unified processing endpoint [8aea6c5]
 - [x] Task: Create FastAPI endpoints for triggering protection tasks [42cc498]
 - [x] Task: Implement local hardware detection for optimization (CPU vs GPU) [d688a4d]
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Integration & Performance' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Integration & Performance' (Protocol in workflow.md) [cda12a8]
