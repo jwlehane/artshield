@@ -21,6 +21,6 @@ Goal: Integrate adversarial models for style protection and poisoning.
 Goal: Optimize the engine and provide the API interface.
 
 - [x] Task: Write tests for the unified processing endpoint [8aea6c5]
-- [ ] Task: Create FastAPI endpoints for triggering protection tasks
+- [x] Task: Create FastAPI endpoints for triggering protection tasks [42cc498]
 - [ ] Task: Implement local hardware detection for optimization (CPU vs GPU)
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Integration & Performance' (Protocol in workflow.md)
