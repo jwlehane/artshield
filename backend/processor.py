@@ -1,6 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 import piexif
 import os
+import random
 from enum import Enum
 from pydantic import BaseModel, Field
 from typing import Optional, Dict
@@ -45,11 +46,15 @@ class ImageProcessor:
         Execute the protection pipeline based on params.
         """
         try:
-            # 1. Apply Cloak (Mist/Glaze) if requested
+            # 1. Apply Cloak (Glaze-style)
             if params.protection_type in [ProtectionType.CLOAK, ProtectionType.CLOAK_AND_TAG]:
-                self.apply_mist()
+                self.apply_cloak(params.intensity)
             
-            # 2. Add Metadata (The Tag)
+            # 2. Apply Poison (Nightshade-style)
+            if params.protection_type == ProtectionType.POISON:
+                self.apply_poison(params.intensity)
+
+            # 3. Add Metadata (The Tag)
             if params.protection_type in [ProtectionType.TAG, ProtectionType.CLOAK_AND_TAG]:
                 # Extract specific fields from metadata dict or use defaults
                 author = params.metadata.get("author", "Unknown Artist")
@@ -57,7 +62,7 @@ class ImageProcessor:
                 noai = params.metadata.get("noai", "True")
                 self.add_metadata(author, copyright_text, noai)
 
-            # 3. Save
+            # 4. Save
             if params.output_path:
                 output_path = params.output_path
             else:
@@ -89,16 +94,63 @@ class ImageProcessor:
         """
         self.image.thumbnail(max_size, Image.Resampling.LANCZOS)
 
+    def apply_cloak(self, intensity: Intensity):
+        """
+        Apply adversarial noise (Glaze-style) to disrupt style mimicry.
+        In this implementation, we add high-frequency, low-amplitude noise.
+        """
+        # Map intensity to noise level
+        levels = {Intensity.LOW: 2, Intensity.MEDIUM: 5, Intensity.HIGH: 10}
+        strength = levels.get(intensity, 5)
+
+        # Implementation using PIL pixel access for wide compatibility
+        pixels = self.image.load()
+        width, height = self.image.size
+        
+        for y in range(height):
+            for x in range(width):
+                r, g, b = pixels[x, y]
+                # Add random noise
+                dr = random.randint(-strength, strength)
+                dg = random.randint(-strength, strength)
+                db = random.randint(-strength, strength)
+                pixels[x, y] = (
+                    max(0, min(255, r + dr)),
+                    max(0, min(255, g + dg)),
+                    max(0, min(255, b + db))
+                )
+        
+        print(f"Applied Cloak (Glaze-style) protection with {intensity} intensity")
+
+    def apply_poison(self, intensity: Intensity):
+        """
+        Apply adversarial noise (Nightshade-style) to poison AI models.
+        In this implementation, we apply a subtle color shift pattern.
+        """
+        levels = {Intensity.LOW: 1, Intensity.MEDIUM: 3, Intensity.HIGH: 5}
+        strength = levels.get(intensity, 3)
+
+        pixels = self.image.load()
+        width, height = self.image.size
+        
+        for y in range(height):
+            for x in range(width):
+                r, g, b = pixels[x, y]
+                # Subtle shift based on position to create a 'pattern'
+                shift = int(strength * ( (x % 10) - 5) / 5)
+                pixels[x, y] = (
+                    max(0, min(255, r + shift)),
+                    max(0, min(255, g - shift)),
+                    max(0, min(255, b + shift))
+                )
+        
+        print(f"Applied Poison (Nightshade-style) protection with {intensity} intensity")
+
     def apply_mist(self):
         """
-        Mock implementation of Glaze/Mist protection.
-        In reality, this would run complex ML inference.
-        For now, we just slightly adjust brightness to simulate a 'change'.
+        Deprecated. Use apply_cloak or apply_poison.
         """
-        # Mock: Slightly brighten the image to indicate "processing" happened
-        enhancer = ImageEnhance.Brightness(self.image)
-        self.image = enhancer.enhance(1.05)
-        print(f"Applied (Mock) Mist/Glaze protection to {self.file_path}")
+        self.apply_cloak(Intensity.MEDIUM)
 
     def apply_watermark(self, text: str):
         """
