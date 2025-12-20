@@ -22,5 +22,5 @@ Goal: Optimize the engine and provide the API interface.
 
 - [x] Task: Write tests for the unified processing endpoint [8aea6c5]
 - [x] Task: Create FastAPI endpoints for triggering protection tasks [42cc498]
-- [ ] Task: Implement local hardware detection for optimization (CPU vs GPU)
+- [x] Task: Implement local hardware detection for optimization (CPU vs GPU) [d688a4d]
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Integration & Performance' (Protocol in workflow.md)
