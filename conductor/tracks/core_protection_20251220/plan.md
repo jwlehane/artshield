@@ -14,7 +14,7 @@ Goal: Integrate adversarial models for style protection and poisoning.
 - [x] Task: Write tests for Adversarial Noise application [67122fe]
 - [x] Task: Implement `The Cloak` (Glaze-style style protection) logic [c2aa785]
 - [x] Task: Implement `The Poison` (Nightshade-style data poisoning) logic [c2aa785]
-- [ ] Task: Integrate Cloak/Poison into the unified processing engine
+- [x] Task: Integrate Cloak/Poison into the unified processing engine [c2aa785]
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Adversarial Protection' (Protocol in workflow.md)
 
 ## Phase 3: Integration & Performance
