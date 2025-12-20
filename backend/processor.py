@@ -91,16 +91,17 @@ class ImageProcessor:
                 noai = params.metadata.get("noai", "True")
                 self.add_metadata(author, copyright_text, noai)
 
-            # 4. Save
+            # 3. Save
             if params.output_path:
                 output_path = params.output_path
             else:
-                # Generate default output path
+                # Generate default output path with timestamp for versioning
+                import datetime
+                timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 base, ext = os.path.splitext(self.file_path)
-                output_path = f"{base}_protected.jpg"
+                output_path = f"{base}_protected_{timestamp}{ext}"
             
             self.save(output_path)
-            self.output_path = output_path
             
             return ProtectionResult(
                 success=True,
@@ -211,10 +212,20 @@ class ImageProcessor:
 
     def add_metadata(self, author: str, copyright: str, noai: str = "True"):
         """
-        Add simple EXIF metadata including NoAI tags.
+        Add simple EXIF metadata including NoAI tags, preserving existing metadata.
         """
         try:
-            exif_dict = {"0th": {}, "Exif": {}, "GPS": {}, "1st": {}, "thumbnail": None}
+            # 1. Load existing EXIF or create new structure
+            if "exif" in self.image.info:
+                try:
+                    exif_dict = piexif.load(self.image.info["exif"])
+                except Exception:
+                    # Fallback if existing exif is malformed
+                    exif_dict = {"0th": {}, "Exif": {}, "GPS": {}, "1st": {}, "thumbnail": None}
+            else:
+                exif_dict = {"0th": {}, "Exif": {}, "GPS": {}, "1st": {}, "thumbnail": None}
+            
+            # 2. Add/Update our tags
             
             # Copyright (Tag 0x8298)
             exif_dict["0th"][piexif.ImageIFD.Copyright] = copyright.encode('utf-8')
@@ -232,6 +243,7 @@ class ImageProcessor:
                 user_comment = b"ASCII\0\0\0NoAI: True"
                 exif_dict["Exif"][piexif.ExifIFD.UserComment] = user_comment
 
+            # 3. Dump back to bytes
             exif_bytes = piexif.dump(exif_dict)
             self.exif_bytes = exif_bytes
         except Exception as e:

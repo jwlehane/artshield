@@ -31,8 +31,8 @@ def test_adversarial_cloak_applied(sample_image_path):
     assert result.success is True
     
     # Load protected image and check pixels
-    protected_img = Image.open(result.protected_path)
-    protected_pixels = np.array(protected_img)
+    with Image.open(result.protected_path) as protected_img:
+        protected_pixels = np.array(protected_img)
     
     # Check that pixels are actually different (adversarial noise added)
     assert not np.array_equal(original_pixels, protected_pixels)
@@ -53,8 +53,8 @@ def test_adversarial_poison_applied(sample_image_path):
     result = processor.process(params)
     
     assert result.success is True
-    protected_img = Image.open(result.protected_path)
-    protected_pixels = np.array(protected_img)
+    with Image.open(result.protected_path) as protected_img:
+        protected_pixels = np.array(protected_img)
     
     assert not np.array_equal(original_pixels, protected_pixels)
     

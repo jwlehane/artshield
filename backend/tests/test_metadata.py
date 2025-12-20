@@ -30,14 +30,14 @@ def test_metadata_injection_jpg(sample_image):
     processor.process(params)
     
     # Verify metadata
-    img = Image.open(processor.output_path)
-    exif_dict = piexif.load(img.info['exif'])
-    
-    # Check Copyright (0x8298)
-    assert exif_dict['0th'][piexif.ImageIFD.Copyright] == b"Copyright 2025 Test"
-    
-    # Check Artist (0x013b)
-    assert exif_dict['0th'][piexif.ImageIFD.Artist] == b"Test Artist"
+    with Image.open(processor.output_path) as img:
+        exif_dict = piexif.load(img.info['exif'])
+        
+        # Check Copyright (0x8298)
+        assert exif_dict['0th'][piexif.ImageIFD.Copyright] == b"Copyright 2025 Test"
+        
+        # Check Artist (0x013b)
+        assert exif_dict['0th'][piexif.ImageIFD.Artist] == b"Test Artist"
     
     # Cleanup
     os.remove(sample_image)
@@ -54,12 +54,12 @@ def test_metadata_noai_tag(sample_image):
     )
     processor.process(params)
     
-    img = Image.open(processor.output_path)
-    # This is a placeholder for where we expect the NoAI tag to be (e.g., UserComment or XMP)
-    # For now, we will use UserComment (0x9286) as a proxy for the test until we implement XMP
-    exif_dict = piexif.load(img.info['exif'])
-    user_comment = exif_dict['Exif'].get(piexif.ExifIFD.UserComment, b'')
-    assert b"NoAI" in user_comment
+    with Image.open(processor.output_path) as img:
+        # This is a placeholder for where we expect the NoAI tag to be (e.g., UserComment or XMP)
+        # For now, we will use UserComment (0x9286) as a proxy for the test until we implement XMP
+        exif_dict = piexif.load(img.info['exif'])
+        user_comment = exif_dict['Exif'].get(piexif.ExifIFD.UserComment, b'')
+        assert b"NoAI" in user_comment
 
     # Cleanup
     os.remove(sample_image)
