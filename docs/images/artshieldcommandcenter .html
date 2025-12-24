@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArtShield: Command Center</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- FontAwesome for Icons (No SVG) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        },
+                        teal: {
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            900: '#134e4a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Chart Container Styling per Requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; /* Tailwind max-w-xl approx */
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        .nav-item.active {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            border-right: 4px solid #0d9488;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+
+    <!-- Chosen Palette: Slate (Warm Neutrals) & Teal (Calm/Secure Accent) -->
+    <!-- Application Structure Plan: Dashboard-style SPA with a persistent sidebar. Organized into 6 modules corresponding to the roadmap items, plus an overview dashboard. Interaction logic handles real-time generation of text and simulated scanning. -->
+    <!-- Visualization & Content Choices: 
+         1. Dashboard Doughnut: "Shield Integrity" to summarize the multi-layered approach.
+         2. Platform Auditor Progress: Linear progress bar to track hygiene.
+         3. Batch Export Line Chart: Visualizes the trade-off between quality and AI-utility (file size).
+         4. Text Generators: Interactive forms for robots.txt and ToS to solve the "lack of knowledge" problem.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans h-screen flex flex-col md:flex-row overflow-hidden">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-64 bg-white border-r border-slate-200 flex flex-col z-20 shadow-sm">
+        <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+            <i class="fa-solid fa-shield-halved text-2xl text-teal-600"></i>
+            <div>
+                <h1 class="font-bold text-slate-900 tracking-tight">ArtShield</h1>
+                <p class="text-xs text-slate-500 font-medium">Command Center v2.0</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1">
+                <li>
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active w-full text-left px-6 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-3 font-medium">
+                        <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
+                    </button>
+                </li>
+                <li class="px-6 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider mt-4">Web Hygiene</li>
+                <li>
+                    <button onclick="switchTab('gatekeeper')" id="nav-gatekeeper" class="nav-item w-full text-left px-6 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-3 font-medium">
+                        <i class="fa-solid fa-robot w-5 text-center"></i> The Gatekeeper
+                    </button>
+                </li>
+                <li>
+                    <button onclick="switchTab('legal')" id="nav-legal" class="nav-item w-full text-left px-6 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-3 font-medium">
+                        <i class="fa-solid fa-gavel w-5 text-center"></i> Legal Shield
+                    </button>
+                </li>
+                <li class="px-6 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider mt-4">Security Ops</li>
+                <li>
+                    <button onclick="switchTab('auditor')" id="nav-auditor" class="nav-item w-full text-left px-6 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-3 font-medium">
+                        <i class="fa-solid fa-list-check w-5 text-center"></i> Platform Auditor
+                    </button>
+                </li>
+                <li>
+                    <button onclick="switchTab('validator')" id="nav-validator" class="nav-item w-full text-left px-6 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-3 font-medium">
+                        <i class="fa-solid fa-magnifying-glass-chart w-5 text-center"></i> Check My Shield
+                    </button>
+                </li>
+                <li class="px-6 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider mt-4">Distribution</li>
+                <li>
+                    <button onclick="switchTab('social')" id="nav-social" class="nav-item w-full text-left px-6 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-3 font-medium">
+                        <i class="fa-solid fa-hashtag w-5 text-center"></i> Social Armor
+                    </button>
+                </li>
+                <li>
+                    <button onclick="switchTab('batch')" id="nav-batch" class="nav-item w-full text-left px-6 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-3 font-medium">
+                        <i class="fa-solid fa-images w-5 text-center"></i> Batch Export
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="p-6 border-t border-slate-100 bg-slate-50">
+            <div class="flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></div>
+                <p class="text-xs text-slate-500">System Secure</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto relative" id="main-content">
+        
+        <!-- DASHBOARD VIEW -->
+        <section id="view-dashboard" class="p-6 md:p-10 max-w-7xl mx-auto fade-in">
+            <header class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">Defense Overview</h2>
+                <p class="text-slate-500 max-w-2xl">
+                    Welcome to the ArtShield Expanded Roadmap. Protection goes beyond pixel modification. This dashboard integrates education, administration, and web hygiene strategies to create a holistic defense against AI scraping.
+                </p>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Stat Card 1 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-semibold text-slate-500 uppercase">Protection Layers</h3>
+                        <i class="fa-solid fa-layer-group text-teal-500 bg-teal-50 p-2 rounded-lg"></i>
+                    </div>
+                    <div class="text-3xl font-bold text-slate-900">4/6</div>
+                    <p class="text-xs text-slate-400 mt-1">Active Strategies</p>
+                </div>
+                <!-- Stat Card 2 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-semibold text-slate-500 uppercase">Platform Health</h3>
+                        <i class="fa-solid fa-heart-pulse text-teal-500 bg-teal-50 p-2 rounded-lg"></i>
+                    </div>
+                    <div class="text-3xl font-bold text-slate-900" id="dash-platform-score">0%</div>
+                    <p class="text-xs text-slate-400 mt-1">Opt-Outs Verified</p>
+                </div>
+                <!-- Stat Card 3 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-semibold text-slate-500 uppercase">Blocked Bots</h3>
+                        <i class="fa-solid fa-ban text-red-500 bg-red-50 p-2 rounded-lg"></i>
+                    </div>
+                    <div class="text-3xl font-bold text-slate-900">12+</div>
+                    <p class="text-xs text-slate-400 mt-1">Via robots.txt</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Chart 1: Shield Integrity -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-900 mb-4">Shield Integrity Breakdown</h3>
+                    <p class="text-sm text-slate-500 mb-6">Visualizing the contribution of each defensive layer to your total art protection.</p>
+                    <div class="chart-container">
+                        <canvas id="integrityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Threat Mitigation -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-900 mb-4">Potential Threat Mitigation</h3>
+                    <p class="text-sm text-slate-500 mb-6">Estimated effectiveness of combined strategies against common scraping vectors.</p>
+                    <div class="chart-container">
+                        <canvas id="threatChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GATEKEEPER VIEW -->
+        <section id="view-gatekeeper" class="hidden p-6 md:p-10 max-w-5xl mx-auto fade-in">
+            <header class="mb-8 border-b border-slate-200 pb-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="bg-teal-100 text-teal-700 p-3 rounded-lg"><i class="fa-solid fa-robot text-xl"></i></div>
+                    <h2 class="text-3xl font-bold text-slate-900">The Gatekeeper</h2>
+                </div>
+                <p class="text-slate-500">Automated <code>robots.txt</code> generator to block AI crawlers at the front door.</p>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-blue-50 border border-blue-100 p-5 rounded-lg">
+                        <h4 class="font-bold text-blue-800 mb-2"><i class="fa-solid fa-circle-info mr-2"></i>Intel Brief</h4>
+                        <p class="text-sm text-blue-700 leading-relaxed">
+                            <strong>Problem:</strong> Artists often don't know how to write code to block bots.
+                            <br><br>
+                            <strong>Solution:</strong> A simple copy-paste tool that generates standardized directives blocking known scrapers like GPTBot, CCBot, and Google-Extended.
+                        </p>
+                    </div>
+                    
+                    <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                        <h4 class="font-bold text-slate-800 mb-4">Select Bots to Block</h4>
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded cursor-pointer">
+                                <input type="checkbox" checked class="w-5 h-5 text-teal-600 rounded border-slate-300 focus:ring-teal-500 bot-check" value="GPTBot">
+                                <span class="text-sm font-medium text-slate-700">GPTBot (OpenAI)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded cursor-pointer">
+                                <input type="checkbox" checked class="w-5 h-5 text-teal-600 rounded border-slate-300 focus:ring-teal-500 bot-check" value="CCBot">
+                                <span class="text-sm font-medium text-slate-700">CCBot (CommonCrawl)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded cursor-pointer">
+                                <input type="checkbox" checked class="w-5 h-5 text-teal-600 rounded border-slate-300 focus:ring-teal-500 bot-check" value="Google-Extended">
+                                <span class="text-sm font-medium text-slate-700">Google-Extended (Gemini)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded cursor-pointer">
+                                <input type="checkbox" checked class="w-5 h-5 text-teal-600 rounded border-slate-300 focus:ring-teal-500 bot-check" value="FacebookBot">
+                                <span class="text-sm font-medium text-slate-700">FacebookBot (Meta)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded cursor-pointer">
+                                <input type="checkbox" checked class="w-5 h-5 text-teal-600 rounded border-slate-300 focus:ring-teal-500 bot-check" value="anthropic-ai">
+                                <span class="text-sm font-medium text-slate-700">ClaudeBot (Anthropic)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2">
+                    <div class="bg-slate-900 rounded-xl overflow-hidden shadow-lg h-full flex flex-col">
+                        <div class="bg-slate-800 px-4 py-2 flex items-center justify-between border-b border-slate-700">
+                            <span class="text-xs font-mono text-slate-400">robots.txt</span>
+                            <button onclick="copyToClipboard('robots-code')" class="text-xs bg-teal-600 hover:bg-teal-500 text-white px-3 py-1 rounded transition-colors">
+                                <i class="fa-regular fa-copy mr-1"></i> Copy
+                            </button>
+                        </div>
+                        <div class="p-6 overflow-auto font-mono text-sm text-green-400">
+                            <pre id="robots-code">User-agent: *
+Disallow:
+
+# Select bots on the left to generate rules...</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LEGAL SHIELD VIEW -->
+        <section id="view-legal" class="hidden p-6 md:p-10 max-w-5xl mx-auto fade-in">
+            <header class="mb-8 border-b border-slate-200 pb-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="bg-teal-100 text-teal-700 p-3 rounded-lg"><i class="fa-solid fa-scale-balanced text-xl"></i></div>
+                    <h2 class="text-3xl font-bold text-slate-900">The Legal Shield</h2>
+                </div>
+                <p class="text-slate-500">Terms of Service snippet generator to legally prohibit AI training.</p>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="space-y-6">
+                     <div class="bg-blue-50 border border-blue-100 p-5 rounded-lg">
+                        <h4 class="font-bold text-blue-800 mb-2"><i class="fa-solid fa-circle-info mr-2"></i>Intel Brief</h4>
+                        <p class="text-sm text-blue-700">
+                            <strong>Problem:</strong> Artists cannot afford lawyers to draft specific anti-AI clauses.
+                            <br><br>
+                            <strong>Solution:</strong> A text generator that creates a legally phrased paragraph prohibiting scraping, mining, and LoRA training for your website footer or ToS page.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Artist / Entity Name</label>
+                        <input type="text" id="legal-name" placeholder="e.g. Jane Doe" class="w-full p-2 border border-slate-300 rounded mb-4 focus:ring-2 focus:ring-teal-500 focus:outline-none" oninput="updateLegal()">
+                        
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Website URL</label>
+                        <input type="text" id="legal-url" placeholder="e.g. www.janedoeart.com" class="w-full p-2 border border-slate-300 rounded mb-4 focus:ring-2 focus:ring-teal-500 focus:outline-none" oninput="updateLegal()">
+                        
+                        <div class="flex gap-2">
+                             <input type="checkbox" id="legal-lora" class="mt-1" checked onchange="updateLegal()">
+                             <label for="legal-lora" class="text-sm text-slate-600">Explicitly mention LoRA/Fine-tuning</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl border-2 border-slate-100 shadow-sm relative">
+                    <div class="absolute top-4 right-4">
+                         <button onclick="copyToClipboard('legal-text')" class="text-slate-400 hover:text-teal-600 transition-colors">
+                            <i class="fa-regular fa-copy text-xl"></i>
+                        </button>
+                    </div>
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Preview</h4>
+                    <p id="legal-text" class="text-slate-800 text-sm leading-relaxed font-serif italic">
+                        "Content on [URL] is © [Name]. No part of this content may be used for the purpose of training artificial intelligence systems. This includes, but is not limited to, scraping, data mining, or the creation of Low-Rank Adaptation (LoRA) models without express written permission."
+                    </p>
+                </div>
+            </div>
+       
