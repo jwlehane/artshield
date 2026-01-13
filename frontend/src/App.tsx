@@ -2,8 +2,8 @@ import { useState, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { Shield, Upload, CheckCircle, AlertCircle } from "lucide-react"
-import { processImage, getStatus, ProcessingStatus } from "@/lib/api"
+import { Shield, Upload, CheckCircle } from "lucide-react"
+import { processImage, getStatus } from "@/lib/api"
 import { toast } from "sonner"
 
 function App() {
@@ -47,11 +47,10 @@ function App() {
       // Poll for status (Mock simulation loop for demo)
       let currentProgress = 0
       const interval = setInterval(async () => {
-        currentProgress += 10
-
         // In real app, we'd use getStatus(taskId) here
         // For the smooth demo effect without complex mock state management:
         if (import.meta.env.VITE_MOCK_API === 'true') {
+          currentProgress += 10
           setProgress(currentProgress)
           if (currentProgress < 50) setStatusMessage("Applying Mist Cloak...")
           else if (currentProgress < 80) setStatusMessage("Injecting Metadata...")
@@ -65,10 +64,27 @@ function App() {
             toast.success("Your folder has been shielded!")
           }
         } else {
-          // Real polling logic would go here
-          const status = await getStatus(taskId)
-          setProgress(status.progress)
-          // ... handling completion
+          // Real polling logic
+          try {
+            const status = await getStatus(taskId)
+            setProgress(status.progress)
+            setStatusMessage(status.message)
+
+            if (status.status === 'completed') {
+              clearInterval(interval)
+              setIsProcessing(false)
+              setIsComplete(true)
+              setStatusMessage("Protection Complete")
+              toast.success("Your folder has been shielded!")
+            } else if (status.status === 'failed') {
+              clearInterval(interval)
+              setIsProcessing(false)
+              setStatusMessage("Processing Failed")
+              toast.error(status.message || "Processing failed")
+            }
+          } catch (error) {
+            console.error("Polling error:", error)
+          }
         }
 
       }, 800)
