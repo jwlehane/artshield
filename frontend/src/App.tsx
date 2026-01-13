@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Shield, Upload, CheckCircle, AlertCircle } from "lucide-react"
-import { processImage, getStatus, ProcessingStatus } from "@/lib/api"
+import { processImage, getStatus } from "@/lib/api"
 import { toast } from "sonner"
 
 function App() {
@@ -65,10 +65,26 @@ function App() {
             toast.success("Your folder has been shielded!")
           }
         } else {
-          // Real polling logic would go here
-          const status = await getStatus(taskId)
-          setProgress(status.progress)
-          // ... handling completion
+          try {
+            const status = await getStatus(taskId)
+            setProgress(status.progress)
+            setStatusMessage(status.message)
+
+            if (status.status === 'completed') {
+              clearInterval(interval)
+              setIsProcessing(false)
+              setIsComplete(true)
+              setStatusMessage("Protection Complete")
+              toast.success("Your folder has been shielded!")
+            } else if (status.status === 'failed') {
+              clearInterval(interval)
+              setIsProcessing(false)
+              setStatusMessage(status.message)
+              toast.error(`Processing failed: ${status.message}`)
+            }
+          } catch (e) {
+             console.error("Error polling status:", e)
+          }
         }
 
       }, 800)
