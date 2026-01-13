@@ -5,7 +5,7 @@ export interface ProcessingStatus {
     message: string;
 }
 
-const MOCK_DELAY_MS = 2000;
+const API_BASE_URL = 'http://localhost:8999';
 
 export async function processImage(files: FileList | null): Promise<string> {
     if (import.meta.env.VITE_MOCK_API === 'true') {
@@ -16,12 +16,27 @@ export async function processImage(files: FileList | null): Promise<string> {
         });
     }
 
-    // Real API call would go here
-    // const formData = new FormData();
-    // ...
-    // const res = await fetch('http://localhost:8999/api/process', ...);
-    // return res.json().id;
-    throw new Error("Real API not implemented yet");
+    if (!files || files.length === 0) {
+        throw new Error("No files provided");
+    }
+
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+    }
+
+    const res = await fetch(`${API_BASE_URL}/api/process`, {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Failed to process image: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    return data.id;
 }
 
 export async function getStatus(taskId: string): Promise<ProcessingStatus> {
@@ -41,6 +56,9 @@ export async function getStatus(taskId: string): Promise<ProcessingStatus> {
         });
     }
 
-    const res = await fetch(`http://localhost:8999/api/status/${taskId}`);
+    const res = await fetch(`${API_BASE_URL}/api/status/${taskId}`);
+    if (!res.ok) {
+        throw new Error(`Failed to get status: ${res.statusText}`);
+    }
     return res.json();
 }
