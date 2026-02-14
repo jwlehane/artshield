@@ -4,7 +4,11 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 import os
 
+from backend.api import protect
+
 app = FastAPI(title="ArtShield API", version="1.0")
+
+app.include_router(protect.router)
 
 # CORS for local development (Vite runs on 5173)
 origins = [
