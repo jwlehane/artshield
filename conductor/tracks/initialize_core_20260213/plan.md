@@ -4,9 +4,9 @@
 - [x] Task: Initialize SQLite database and define 'ProtectedAssets' schema a162e50
     - [x] Create database migration/initialization script a162e50
     - [x] Implement SQLAlchemy/Tortoise models for tracking assets a162e50
-- [ ] Task: Implement API endpoints for basic protection
-    - [ ] Create endpoint for metadata stripping
-    - [ ] Create endpoint for simple watermarking
+- [x] Task: Implement API endpoints for basic protection 8d57752
+    - [x] Create endpoint for metadata stripping 8d57752
+    - [x] Create endpoint for simple watermarking 8d57752
 - [ ] Task: Conductor - User Manual Verification 'Backend Foundations' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Foundations
