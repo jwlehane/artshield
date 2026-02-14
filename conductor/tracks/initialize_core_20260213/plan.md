@@ -1,9 +1,9 @@
 # Implementation Plan: Initialize Core Infrastructure
 
 ## Phase 1: Backend Foundations
-- [ ] Task: Initialize SQLite database and define 'ProtectedAssets' schema
-    - [ ] Create database migration/initialization script
-    - [ ] Implement SQLAlchemy/Tortoise models for tracking assets
+- [x] Task: Initialize SQLite database and define 'ProtectedAssets' schema a162e50
+    - [x] Create database migration/initialization script a162e50
+    - [x] Implement SQLAlchemy/Tortoise models for tracking assets a162e50
 - [ ] Task: Implement API endpoints for basic protection
     - [ ] Create endpoint for metadata stripping
     - [ ] Create endpoint for simple watermarking
