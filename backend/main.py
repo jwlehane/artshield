@@ -4,7 +4,10 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 import os
 
-from backend.api import protect
+try:
+    from backend.api import protect
+except ImportError:
+    from api import protect
 
 app = FastAPI(title="ArtShield API", version="1.0")
 
@@ -33,4 +36,6 @@ async def health_check():
 #    app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8999, reload=True)
+    import uvicorn
+    # Use the app object directly to avoid import issues with uvicorn.run string reference
+    uvicorn.run(app, host="127.0.0.1", port=8999)
