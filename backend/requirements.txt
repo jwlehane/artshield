@@ -4,6 +4,8 @@ python-multipart
 pillow
 piexif
 requests
+sqlalchemy
+pytest
 # PyTorch will need manual installation for CUDA, but we list the base here
 torch
 torchvision
