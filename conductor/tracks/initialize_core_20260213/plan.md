@@ -13,9 +13,9 @@
 - [x] Task: Integrate TanStack Query and shadcn/ui 806a355
     - [x] Install and configure TanStack Query provider 806a355
     - [x] Initialize shadcn/ui and add initial components (Button, Card, Input) 806a355
-- [ ] Task: Create Basic Protection Dashboard
-    - [ ] Implement file upload component
-    - [ ] Implement protection status display
+- [x] Task: Create Basic Protection Dashboard 19f4883
+    - [x] Implement file upload component 19f4883
+    - [x] Implement protection status display 19f4883
 - [ ] Task: Conductor - User Manual Verification 'Frontend Foundations' (Protocol in workflow.md)
 
 ## Phase 3: Integration & E2E Flow
