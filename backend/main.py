@@ -6,10 +6,16 @@ import os
 
 try:
     from backend.api import protect
+    from backend.database import init_db
 except ImportError:
     from api import protect
+    from database import init_db
 
 app = FastAPI(title="ArtShield API", version="1.0")
+
+@app.on_event("startup")
+def on_startup():
+    init_db()
 
 app.include_router(protect.router)
 

@@ -16,6 +16,7 @@ class ProtectedAsset(Base):
     __tablename__ = "protected_assets"
 
     id = Column(Integer, primary_key=True, index=True)
+    task_id = Column(String, index=True)
     original_name = Column(String)
     original_path = Column(String)
     shielded_path = Column(String)
@@ -25,3 +26,10 @@ class ProtectedAsset(Base):
 
 def init_db():
     Base.metadata.create_all(bind=engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

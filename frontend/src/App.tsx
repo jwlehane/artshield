@@ -56,9 +56,8 @@ function App() {
 
       let currentProgress = 0
       const interval = setInterval(async () => {
-        currentProgress += 5
-
-        if (import.meta.env.VITE_MOCK_API === 'true' || true) { // Force mock for UI dev
+        if (import.meta.env.VITE_MOCK_API === 'true') {
+          currentProgress += 5
           setProgress(currentProgress)
           if (currentProgress < 30) setStatusMessage("Stripping Metadata...")
           else if (currentProgress < 70) setStatusMessage("Applying ArtShield Watermark...")
@@ -74,9 +73,23 @@ function App() {
         } else {
           const status = await getStatus(taskId)
           setProgress(status.progress)
+          setStatusMessage(status.message)
+          
+          if (status.status === 'completed' || status.status === 'failed') {
+            clearInterval(interval)
+            setIsProcessing(false)
+            setIsComplete(true)
+            if (status.status === 'completed') {
+                setStatusMessage("Protection Complete")
+                toast.success("Assets have been shielded!")
+            } else {
+                setStatusMessage("Protection Failed")
+                toast.error("Failed to shield some assets")
+            }
+          }
         }
 
-      }, 200)
+      }, 500)
 
     } catch (error) {
       console.error(error)

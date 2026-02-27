@@ -6,6 +6,7 @@ export interface ProcessingStatus {
 }
 
 const MOCK_DELAY_MS = 2000;
+const TAILNET_IP = '100.104.161.54';
 
 export async function processImage(files: FileList | null): Promise<string> {
     if (import.meta.env.VITE_MOCK_API === 'true') {
@@ -16,31 +17,35 @@ export async function processImage(files: FileList | null): Promise<string> {
         });
     }
 
-    // Real API call would go here
-    // const formData = new FormData();
-    // ...
-    // const res = await fetch('http://localhost:8999/api/process', ...);
-    // return res.json().id;
-    throw new Error("Real API not implemented yet");
+    const formData = new FormData();
+    if (files) {
+        for (let i = 0; i < files.length; i++) {
+            formData.append('files', files[i]);
+        }
+    }
+
+    const res = await fetch(`http://${window.location.hostname}:8999/api/process`, {
+        method: 'POST',
+        body: formData
+    });
+    const data = await res.json();
+    return data.id;
 }
 
 export async function getStatus(taskId: string): Promise<ProcessingStatus> {
     if (import.meta.env.VITE_MOCK_API === 'true') {
-        // Simulate progress based on time or random
         return new Promise((resolve) => {
             setTimeout(() => {
-                // Determine mock state - for a simple demo, we can just return random progress
-                // In a real mock, we might store state in localStorage
                 resolve({
                     id: taskId,
                     status: 'processing',
-                    progress: 45, // Static for now, or could increment
+                    progress: 45,
                     message: "Applying Mist Cloak (Mock)..."
                 });
             }, 300);
         });
     }
 
-    const res = await fetch(`http://localhost:8999/api/status/${taskId}`);
+    const res = await fetch(`http://${window.location.hostname}:8999/api/status/${taskId}`);
     return res.json();
 }

@@ -16,10 +16,10 @@
 - [x] Task: Create Basic Protection Dashboard 19f4883
     - [x] Implement file upload component 19f4883
     - [x] Implement protection status display 19f4883
-- [ ] Task: Conductor - User Manual Verification 'Frontend Foundations' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend Foundations' (Protocol in workflow.md) a7b3c2e
 
-## Phase 3: Integration & E2E Flow
-- [ ] Task: Connect Frontend to Protection API
-    - [ ] Implement useMutation for triggering protection tasks
-    - [ ] Implement database logging for each protected asset
+## Phase 3: Integration & E2E Flow [checkpoint: a7b3c2e]
+- [x] Task: Connect Frontend to Protection API a7b3c2e
+    - [x] Implement useMutation for triggering protection tasks a7b3c2e
+    - [x] Implement database logging for each protected asset a7b3c2e
 - [ ] Task: Conductor - User Manual Verification 'Integration & E2E Flow' (Protocol in workflow.md)
